@@ -57,19 +57,14 @@ struct SeqFunctor // : EndoFunctor<Seq>
 };
 
 // Const functor: always mapping to the specific object and the specific morphism
-#if 1
-template<typename T>
-struct Const
-{
-    Const(int n):n(n) {}
-    operator int() const { return n; }
-    int n;
-};
-#else
 // GCC rejects by invalid use of incomplete type ‘class std::function<Const<Y>(Const<X>)>’
 // while CLANG accepts
 template<typename T>
 using Const = int;
+#if !defined(__clang__)
+// I'm not sure the reason.
+// Without this, GCC produces errors like "invalid use of incomplete type ‘Hom<int, int>'"
+template class std::function<int(int)>;
 #endif
 
 struct ConstFunctor // : EndoFunctor<Const>
